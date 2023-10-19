@@ -1,4 +1,6 @@
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+
+// ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
 import 'package:shopper_cart/buyer_page.dart';
@@ -7,15 +9,24 @@ import 'package:shopper_cart/login_page.dart';
 import 'package:shopper_cart/makelist_page.dart';
 import 'package:shopper_cart/models/requested_model.dart';
 import 'package:shopper_cart/page_changer.dart';
+import 'package:shopper_cart/profile_page.dart';
 import 'package:shopper_cart/seller_list.dart';
 import 'package:shopper_cart/seller_page.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shopper_cart/user_provider.dart';
 
 void main() {
-  runApp(MainApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (context) => UserProvider(),
+      child: MainApp(),
+    ),
+  );
 }
 
 class MainApp extends StatefulWidget {
-  const MainApp({super.key});
+  const MainApp({Key? key}) : super(key: key);
 
   @override
   State<MainApp> createState() => _MainAppState();
@@ -27,7 +38,8 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        "/": (context) => PageChanger(),
+        "/": (context) => LoginPage(),
+        "/profile": (context) => ProfilePage(),
         "/sellerlist": (context) => SellerListPage(),
         "/makelist": (context) => MakeListPage(),
         "/buy": (context) => BuyerPage(),

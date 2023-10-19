@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shopper_cart/buyer_page.dart';
 import 'package:shopper_cart/models/requested_model.dart';
+import 'package:shopper_cart/profile_page.dart';
 import 'package:shopper_cart/seller_page.dart';
 
 class PageChanger extends StatefulWidget {
@@ -56,7 +57,8 @@ class _PageChangerState extends State<PageChanger> {
               RequestedItem(name: "Chai", price: 10.0, quantity: 2),
               RequestedItem(name: "Samosa", price: 15.0, quantity: 1),
               RequestedItem(name: "Biryani", price: 8.0, quantity: 3),
-            ])
+            ]),
+            ProfilePage(),
           ],
           onPageChanged: (index) {
             onPageChange(index);

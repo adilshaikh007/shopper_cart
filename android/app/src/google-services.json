@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "927121172191",
+    "project_id": "leaao-66139",
+    "storage_bucket": "leaao-66139.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:927121172191:android:6b01af9a8a8ea13c0bab6a",
+        "android_client_info": {
+          "package_name": "com.example.shopper_cart"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBL75T2KzIOqlV63eWiWpykTx7aP9_DUS8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
