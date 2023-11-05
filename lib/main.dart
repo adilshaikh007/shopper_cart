@@ -12,11 +12,20 @@ import 'package:shopper_cart/page_changer.dart';
 import 'package:shopper_cart/profile_page.dart';
 import 'package:shopper_cart/seller_list.dart';
 import 'package:shopper_cart/seller_page.dart';
-import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shopper_cart/user_provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: FirebaseOptions(
+      apiKey: "AIzaSyBL75T2KzIOqlV63eWiWpykTx7aP9_DUS8",
+      appId: "1:927121172191:android:6b01af9a8a8ea13c0bab6a",
+      messagingSenderId: "927121172191",
+      projectId: "leaao-66139",
+    ),
+  );
   runApp(
     ChangeNotifierProvider(
       create: (context) => UserProvider(),
