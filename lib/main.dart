@@ -1,5 +1,3 @@
-// // ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
-
 // ignore_for_file: prefer_const_constructors
 
 import 'package:flutter/material.dart';
@@ -11,7 +9,7 @@ import 'package:shopper_cart/models/requested_model.dart';
 import 'package:shopper_cart/page_changer.dart';
 import 'package:shopper_cart/profile_page.dart';
 import 'package:shopper_cart/seller_list.dart';
-import 'package:shopper_cart/seller_page.dart';
+import 'package:shopper_cart/shopper_page.dart';
 import 'package:provider/provider.dart';
 import 'package:shopper_cart/user_provider.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -55,7 +53,7 @@ class _MainAppState extends State<MainApp> {
         "/page": (context) => PageChanger(),
         '/login': (context) => LoginPage(),
         "/choice": (context) => BuyAndDeliverPage(),
-        "/sell": (context) => SellerPage(
+        "/sell": (context) => ShopperPage(
               shoppingList: [
                 RequestedItem(name: "Chai", price: 10.0, quantity: 2),
                 RequestedItem(name: "Samosa", price: 15.0, quantity: 1),

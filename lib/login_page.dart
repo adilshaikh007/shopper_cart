@@ -2,7 +2,9 @@
 // import 'package:google_fonts/google_fonts.dart';
 // import 'package:google_sign_in/google_sign_in.dart';
 // import 'package:provider/provider.dart';
-// import 'package:shopper_cart/user_provider.dart'; // Import the user provider
+// import 'package:shopper_cart/models/makelistmodel.dart';
+// import 'package:shopper_cart/user_provider.dart';
+// import 'package:cloud_firestore/cloud_firestore.dart';
 
 // GoogleSignIn _googleSignIn = GoogleSignIn(
 //   scopes: ['email', 'https://www.googleapis.com/auth/contacts.readonly'],
@@ -17,6 +19,7 @@
 
 // class _LoginPageState extends State<LoginPage> {
 //   GoogleSignInAccount? currentUser;
+//   List<MakeListModel> shoppingList = [];
 //   @override
 //   void initState() {
 //     _googleSignIn.onCurrentUserChanged.listen((account) {
@@ -24,30 +27,58 @@
 //         currentUser = account;
 //       });
 //       if (currentUser != null) {
-//         // Set the user information in the provider when authenticated
 //         Provider.of<UserProvider>(context, listen: false).setUser(currentUser);
 //         print("User is already authenticated");
 //       }
 //     });
 
-//     // Attempt silent sign-in
 //     _googleSignIn.signInSilently();
 
 //     super.initState();
 //   }
 
+//   Future<void> storeUserDataInFirestore(GoogleSignInAccount user) async {
+//     final CollectionReference users =
+//         FirebaseFirestore.instance.collection('users');
+
+//     await users.doc(user.id).set({
+//       'id': user.id,
+//       'displayName': user.displayName,
+//       'email': user.email,
+//       'photoUrl': user.photoUrl,
+//     });
+//   }
+//   // Future<void> updateShoppingListInFirestore(GoogleSignInAccount user) async {
+//   //   final CollectionReference users =
+//   //       FirebaseFirestore.instance.collection('users');
+
+//   //   await users.doc(user.id).update({
+//   //     'shoppingList': shoppingList.map((item) {
+//   //       return {
+//   //         'name': item.name,
+//   //         'price': item.price,
+//   //         'quantity': item.quantity,
+//   //       };
+//   //     }).toList(),
+//   //   });
+//   // }
+
 //   handleSignIn() async {
 //     try {
 //       await _googleSignIn.signIn();
-//       Provider.of<UserProvider>(context, listen: false)
-//           .setUser(_googleSignIn.currentUser);
+//       final currentUser = _googleSignIn.currentUser;
+//       Provider.of<UserProvider>(context, listen: false).setUser(currentUser);
+
+//       await storeUserDataInFirestore(currentUser!);
 //     } catch (error) {
 //       print('ERROR: $error');
 //     }
 //   }
 
 //   handleSignOut() async {
+//     _googleSignIn.signOut();
 //     _googleSignIn.disconnect();
+//     // _googleSignIn = GoogleSignIn();
 //     Provider.of<UserProvider>(context, listen: false).signOut();
 //     print("User signed out");
 //   }
@@ -154,24 +185,24 @@
 //             child: Container(
 //               width: 250,
 //               child: ElevatedButton(
-//                   style:
-//                       ElevatedButton.styleFrom(backgroundColor: Colors.white),
-//                   onPressed: () {
-//                     handleSignIn();
-//                   },
-//                   child: Padding(
-//                     padding: const EdgeInsets.all(8.0),
-//                     child: Row(
-//                       mainAxisAlignment: MainAxisAlignment.center,
-//                       children: [
-//                         Image.asset(
-//                           "assets/google.png",
-//                           height: 30,
-//                           width: 30,
-//                         ),
-//                       ],
-//                     ),
-//                   )),
+//                 style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+//                 onPressed: () {
+//                   handleSignIn();
+//                 },
+//                 child: Padding(
+//                   padding: const EdgeInsets.all(8.0),
+//                   child: Row(
+//                     mainAxisAlignment: MainAxisAlignment.center,
+//                     children: [
+//                       Image.asset(
+//                         "assets/google.png",
+//                         height: 30,
+//                         width: 30,
+//                       ),
+//                     ],
+//                   ),
+//                 ),
+//               ),
 //             ),
 //           ),
 //         ],
@@ -190,12 +221,11 @@
 //   }
 // }
 
-// ignore_for_file: avoid_print, use_build_context_synchronously, prefer_const_constructors
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:shopper_cart/models/makelistmodel.dart';
 import 'package:shopper_cart/user_provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -212,6 +242,7 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   GoogleSignInAccount? currentUser;
+  List<MakeListModel> shoppingList = [];
 
   @override
   void initState() {
@@ -242,7 +273,22 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  handleSignIn() async {
+  // Future<void> updateShoppingListInFirestore(GoogleSignInAccount user) async {
+  //   final CollectionReference users =
+  //       FirebaseFirestore.instance.collection('users');
+
+  //   await users.doc(user.id).update({
+  //     'shoppingList': shoppingList.map((item) {
+  //       return {
+  //         'name': item.name,
+  //         'price': item.price,
+  //         'quantity': item.quantity,
+  //       };
+  //     }).toList(),
+  //   });
+  // }
+
+  void handleSignIn() async {
     try {
       await _googleSignIn.signIn();
       final currentUser = _googleSignIn.currentUser;
@@ -254,10 +300,9 @@ class _LoginPageState extends State<LoginPage> {
     }
   }
 
-  handleSignOut() async {
+  void handleSignOut() async {
     _googleSignIn.signOut();
     _googleSignIn.disconnect();
-    // _googleSignIn = GoogleSignIn();
     Provider.of<UserProvider>(context, listen: false).signOut();
     print("User signed out");
   }

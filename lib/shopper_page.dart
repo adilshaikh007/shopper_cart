@@ -1,17 +1,19 @@
+// ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
+
 import 'package:flutter/material.dart';
 import 'package:shopper_cart/models/buyer_request_model.dart';
 import 'package:shopper_cart/models/requested_model.dart';
 
-class SellerPage extends StatefulWidget {
+class ShopperPage extends StatefulWidget {
   final List<RequestedItem> shoppingList;
 
-  SellerPage({required this.shoppingList});
+  ShopperPage({required this.shoppingList});
 
   @override
-  _SellerPageState createState() => _SellerPageState();
+  _ShopperPageState createState() => _ShopperPageState();
 }
 
-class _SellerPageState extends State<SellerPage> {
+class _ShopperPageState extends State<ShopperPage> {
   List<BuyerRequest> buyerRequests = [];
 
   void updateBuyerRequest(BuyerRequest updatedRequest) {
