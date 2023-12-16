@@ -53,11 +53,10 @@ class _PageChangerState extends State<PageChanger> {
           controller: pageController,
           children: [
             BuyerPage(),
-            ShopperPage(shoppingList: [
-              RequestedItem(name: "Chai", price: 10.0, quantity: 2),
-              RequestedItem(name: "Samosa", price: 15.0, quantity: 1),
-              RequestedItem(name: "Biryani", price: 8.0, quantity: 3),
-            ]),
+            ShopperPage(
+
+                // itemSuggestions: [],
+                ),
             ProfilePage(),
           ],
           onPageChanged: (index) {

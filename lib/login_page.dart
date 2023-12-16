@@ -20,6 +20,7 @@
 // class _LoginPageState extends State<LoginPage> {
 //   GoogleSignInAccount? currentUser;
 //   List<MakeListModel> shoppingList = [];
+
 //   @override
 //   void initState() {
 //     _googleSignIn.onCurrentUserChanged.listen((account) {
@@ -48,6 +49,7 @@
 //       'photoUrl': user.photoUrl,
 //     });
 //   }
+
 //   // Future<void> updateShoppingListInFirestore(GoogleSignInAccount user) async {
 //   //   final CollectionReference users =
 //   //       FirebaseFirestore.instance.collection('users');
@@ -63,7 +65,7 @@
 //   //   });
 //   // }
 
-//   handleSignIn() async {
+//   void handleSignIn() async {
 //     try {
 //       await _googleSignIn.signIn();
 //       final currentUser = _googleSignIn.currentUser;
@@ -75,10 +77,9 @@
 //     }
 //   }
 
-//   handleSignOut() async {
+//   void handleSignOut() async {
 //     _googleSignIn.signOut();
 //     _googleSignIn.disconnect();
-//     // _googleSignIn = GoogleSignIn();
 //     Provider.of<UserProvider>(context, listen: false).signOut();
 //     print("User signed out");
 //   }
@@ -220,7 +221,6 @@
 //     );
 //   }
 // }
-
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_sign_in/google_sign_in.dart';
@@ -273,20 +273,13 @@ class _LoginPageState extends State<LoginPage> {
     });
   }
 
-  // Future<void> updateShoppingListInFirestore(GoogleSignInAccount user) async {
-  //   final CollectionReference users =
-  //       FirebaseFirestore.instance.collection('users');
-
-  //   await users.doc(user.id).update({
-  //     'shoppingList': shoppingList.map((item) {
-  //       return {
-  //         'name': item.name,
-  //         'price': item.price,
-  //         'quantity': item.quantity,
-  //       };
-  //     }).toList(),
-  //   });
-  // }
+  void navigateToAddressInputScreen(GoogleSignInAccount currentUser) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => AddressInputScreen(currentUser: currentUser)),
+    );
+  }
 
   void handleSignIn() async {
     try {
@@ -295,6 +288,8 @@ class _LoginPageState extends State<LoginPage> {
       Provider.of<UserProvider>(context, listen: false).setUser(currentUser);
 
       await storeUserDataInFirestore(currentUser!);
+
+      navigateToAddressInputScreen(currentUser);
     } catch (error) {
       print('ERROR: $error');
     }
@@ -313,57 +308,54 @@ class _LoginPageState extends State<LoginPage> {
 
     if (user != null) {
       print(user.displayName);
-      print(user.id);
-      WidgetsBinding.instance?.addPostFrameCallback((_) {
-        Navigator.pushReplacementNamed(context, "/page");
-      });
 
-      return Column(
-        children: [
-          SizedBox(
-            height: 90,
-          ),
-          GoogleUserCircleAvatar(identity: user),
-          SizedBox(
-            height: 20,
-          ),
-          Center(
-            child: Text(
-              user.displayName ?? '',
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
-                fontSize: 20,
-              ),
-            ),
-          ),
-          SizedBox(
-            height: 10,
-          ),
-          Center(
-            child: Text(
-              user.email,
-              textAlign: TextAlign.center,
-              style: TextStyle(color: Colors.white, fontSize: 15),
-            ),
-          ),
-          SizedBox(
-            height: 60,
-          ),
-          Center(
-            child: Text(
-              "Welcome to shopper-cart",
-              style: TextStyle(color: Colors.white, fontSize: 20),
-              textAlign: TextAlign.center,
-            ),
-          ),
-          SizedBox(
-            height: 40,
-          ),
-          ElevatedButton(onPressed: handleSignOut, child: Text("SignOut")),
-        ],
-      );
+      return Center(child: CircularProgressIndicator());
+      //Column(
+      //   children: [
+      //     SizedBox(
+      //       height: 90,
+      //     ),
+      //     GoogleUserCircleAvatar(identity: user),
+      //     SizedBox(
+      //       height: 20,
+      //     ),
+      //     Center(
+      //       child: Text(
+      //         user.displayName ?? '',
+      //         textAlign: TextAlign.center,
+      //         style: TextStyle(
+      //           color: Colors.white,
+      //           fontWeight: FontWeight.bold,
+      //           fontSize: 20,
+      //         ),
+      //       ),
+      //     ),
+      //     SizedBox(
+      //       height: 10,
+      //     ),
+      //     Center(
+      //       child: Text(
+      //         user.email,
+      //         textAlign: TextAlign.center,
+      //         style: TextStyle(color: Colors.white, fontSize: 15),
+      //       ),
+      //     ),
+      //     SizedBox(
+      //       height: 60,
+      //     ),
+      //     Center(
+      //       child: Text(
+      //         "Welcome to shopper-cart",
+      //         style: TextStyle(color: Colors.white, fontSize: 20),
+      //         textAlign: TextAlign.center,
+      //       ),
+      //     ),
+      //     SizedBox(
+      //       height: 40,
+      //     ),
+      //     ElevatedButton(onPressed: handleSignOut, child: Text("SignOut")),
+      //   ],
+      // );
     } else {
       return Column(
         children: [
@@ -442,5 +434,114 @@ class _LoginPageState extends State<LoginPage> {
         child: buildBody(),
       ),
     );
+  }
+}
+
+class AddressInputScreen extends StatefulWidget {
+  final GoogleSignInAccount currentUser;
+
+  const AddressInputScreen({Key? key, required this.currentUser})
+      : super(key: key);
+
+  @override
+  _AddressInputScreenState createState() => _AddressInputScreenState();
+}
+
+class _AddressInputScreenState extends State<AddressInputScreen> {
+  final TextEditingController roomController = TextEditingController();
+  final TextEditingController hostelController = TextEditingController();
+  final TextEditingController collegeController = TextEditingController();
+  final TextEditingController areaController = TextEditingController();
+  final TextEditingController cityController = TextEditingController();
+  final TextEditingController stateController = TextEditingController();
+  final TextEditingController phoneController = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Enter Address'),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: SingleChildScrollView(
+          child: Column(
+            children: [
+              TextField(
+                controller: roomController,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(labelText: 'Room/House No'),
+              ),
+              TextField(
+                controller: hostelController,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(labelText: 'Hostel Name'),
+              ),
+              TextField(
+                controller: collegeController,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(labelText: 'College Name'),
+              ),
+              TextField(
+                controller: areaController,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(labelText: 'Area'),
+              ),
+              TextField(
+                controller: cityController,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(labelText: 'City/District'),
+              ),
+              TextField(
+                controller: stateController,
+                onChanged: (_) => setState(() {}),
+                decoration: InputDecoration(labelText: 'State'),
+              ),
+              TextField(
+                controller: phoneController,
+                onChanged: (_) => setState(() {}),
+                keyboardType: TextInputType.phone,
+                decoration: InputDecoration(labelText: 'Phone Number'),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: isFormValid() ? storeAddressInFirestore : null,
+                child: Text('Save Address'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  bool isFormValid() {
+    return roomController.text.isNotEmpty &&
+        hostelController.text.isNotEmpty &&
+        collegeController.text.isNotEmpty &&
+        areaController.text.isNotEmpty &&
+        cityController.text.isNotEmpty &&
+        stateController.text.isNotEmpty &&
+        phoneController.text.isNotEmpty;
+  }
+
+  void storeAddressInFirestore() async {
+    final CollectionReference users =
+        FirebaseFirestore.instance.collection('users');
+
+    await users.doc(widget.currentUser.id).update({
+      'address': {
+        'room': roomController.text,
+        'hostel': hostelController.text,
+        'college': collegeController.text,
+        'area': areaController.text,
+        'city': cityController.text,
+        'state': stateController.text,
+        'phone': phoneController.text,
+      },
+    });
+
+    Navigator.pop(context); // Close the current screen
+    Navigator.pushReplacementNamed(context, "/page"); // Navigate to "/page"
   }
 }

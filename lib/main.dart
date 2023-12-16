@@ -53,13 +53,7 @@ class _MainAppState extends State<MainApp> {
         "/page": (context) => PageChanger(),
         '/login': (context) => LoginPage(),
         "/choice": (context) => BuyAndDeliverPage(),
-        "/sell": (context) => ShopperPage(
-              shoppingList: [
-                RequestedItem(name: "Chai", price: 10.0, quantity: 2),
-                RequestedItem(name: "Samosa", price: 15.0, quantity: 1),
-                RequestedItem(name: "Biryani", price: 8.0, quantity: 3),
-              ],
-            ),
+        "/sell": (context) => ShopperPage(),
       },
     );
   }
