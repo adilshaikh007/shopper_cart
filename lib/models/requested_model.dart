@@ -1,18 +1,7 @@
-// class RequestedItem {
-//   final String name;
-//   double price;
-//   int quantity;
-
-//   RequestedItem({
-//     required this.name,
-//     required this.price,
-//     required this.quantity,
-//   });
-// }
 class RequestedItem {
   final String name;
-  final double price;
-  final double quantity;
+  double price;
+  double quantity;
 
   RequestedItem({
     required this.name,
@@ -24,7 +13,33 @@ class RequestedItem {
     return RequestedItem(
       name: map['name'] ?? '',
       price: (map['price'] ?? 0.0).toDouble(),
-      quantity: double.tryParse(map['quantity'].toString()) ?? 0.0,
+      quantity: _parseQuantity(map['quantity']),
     );
+  }
+
+  static double _parseQuantity(dynamic quantity) {
+    if (quantity is num) {
+      return quantity.toDouble();
+    } else if (quantity is String) {
+      if (quantity.toLowerCase() == 'half') {
+        return 0.5;
+      } else if (quantity.toLowerCase() == 'full') {
+        return 1;
+      } else {
+        return double.tryParse(quantity) ?? 0.0;
+      }
+    } else {
+      return 0.0;
+    }
+  }
+
+  String getDisplayQuantity() {
+    if (quantity == 1 && quantity == double) {
+      return 'Full';
+    } else if (quantity == 0.5) {
+      return 'Half';
+    } else {
+      return quantity.toString();
+    }
   }
 }

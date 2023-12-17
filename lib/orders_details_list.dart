@@ -37,14 +37,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              'Shopper: ${widget.seller.name}',
-              style: TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: 18,
-                color: Colors.indigo, // Text color
-              ),
-            ),
             SizedBox(height: 16),
             Text(
               'Shopping Location: ${widget.seller.shoppinglocation}',
@@ -62,14 +54,6 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
               ),
             ),
             SizedBox(height: 16),
-            Text(
-              'Shopper\'s Home Address: ${widget.seller.deliveryPersonHomeAddress}',
-              style: TextStyle(
-                fontSize: 16,
-                color: Colors.grey, // Subtitle color
-              ),
-            ),
-            SizedBox(height: 24),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [

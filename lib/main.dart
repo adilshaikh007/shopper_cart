@@ -45,7 +45,7 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
-        "/": (context) => LoginPage(),
+        "/": (context) => ShopperPage(),
         "/profile": (context) => ProfilePage(),
         "/sellerlist": (context) => SellerListPage(),
         "/makelist": (context) => MakeListPage(),

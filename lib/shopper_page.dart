@@ -1,12 +1,13 @@
 // // // ignore_for_file: library_private_types_in_public_api, use_key_in_widget_constructors, prefer_const_constructors_in_immutables
 
-// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables
+// ignore_for_file: prefer_const_constructors, prefer_const_literals_to_create_immutables, unnecessary_cast
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shopper_cart/models/buyer_request_model.dart';
+import 'package:shopper_cart/models/delivery_info.dart';
 import 'package:shopper_cart/models/requested_model.dart';
 import 'package:shopper_cart/user_provider.dart';
 
@@ -48,6 +49,9 @@ class _ShopperPageState extends State<ShopperPage> {
         itemCount: buyerRequests.length,
         itemBuilder: (context, index) {
           final request = buyerRequests[index];
+          List<String> shoppingList = request.requestedItems
+              .map((item) => item.name as String)
+              .toList();
           return Card(
             elevation: 4,
             margin: EdgeInsets.all(16),
@@ -55,7 +59,7 @@ class _ShopperPageState extends State<ShopperPage> {
               children: [
                 ListTile(
                   title: Text(
-                    "Name: ${request.displayName}",
+                    "Requested Items: ${shoppingList.join(', ')}",
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   subtitle: Text(
@@ -70,11 +74,15 @@ class _ShopperPageState extends State<ShopperPage> {
                 ),
                 SizedBox(height: 8),
                 Text(
-                  "Area: ${request.address['area']}",
+                  "Room No: ${request.address['room']}",
                   style: TextStyle(fontSize: 16),
                 ),
                 Text(
-                  "City: ${request.address['city']}",
+                  "Hostel: ${request.address['hostel']}",
+                  style: TextStyle(fontSize: 16),
+                ),
+                Text(
+                  "College: ${request.address['college']}",
                   style: TextStyle(fontSize: 16),
                 ),
                 // Add more fields as needed
@@ -124,24 +132,18 @@ class RequestDetailScreen extends StatelessWidget {
                   //   style: TextStyle(fontSize: 18),
                   // ),
 
+                  SizedBox(height: 16),
                   Center(
                     child: Text(
-                      "Address:",
-                      style:
-                          TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
+                      "Room No: ${request.address['room']}",
+                      style: TextStyle(fontSize: 20),
                     ),
                   ),
                   SizedBox(height: 16),
                   Center(
                     child: Text(
-                      "Area: ${request.address['area']}",
+                      "Hostel: ${request.address['hostel']}",
                       style: TextStyle(fontSize: 20),
-                    ),
-                  ),
-                  Center(
-                    child: Text(
-                      "City: ${request.address['city']}",
-                      style: TextStyle(fontSize: 16),
                     ),
                   ),
                   SizedBox(height: 30),
@@ -173,7 +175,8 @@ class RequestDetailScreen extends StatelessWidget {
                         return DataRow(cells: [
                           DataCell(Text(item.name)),
                           DataCell(Text(item.price.toString())),
-                          DataCell(Text(item.quantity.toString())),
+                          DataCell(Text(item
+                              .getDisplayQuantity())), // Use the display value
                           DataCell(
                             Text((item.price * item.quantity)
                                 .toStringAsFixed(2)),
@@ -215,11 +218,97 @@ class RequestDetailScreen extends StatelessWidget {
                         SizedBox(height: 16),
                         ElevatedButton(
                           onPressed: () {
-                            // Handle sending invitation logic here
+                            // showDialog(
+                            //   context: context,
+                            //   builder: (context) => DeliveryInfoPopup(request),
+                            // ).then((deliveryInfo) {
+                            //   if (deliveryInfo != null) {
+                            //     // Handle the collected delivery information
+                            //     // You can pass it to SellerListPage or handle it as needed
+                            //     print(
+                            //         "Delivery Time: ${deliveryInfo.deliveryTime}");
+                            //     print(
+                            //         "Delivery Charges: ${deliveryInfo.deliveryCharges}");
+
+                            //     // Get the current user's Google user ID
+                            //     GoogleSignInAccount? googleUserId =
+                            //         Provider.of<UserProvider>(context,
+                            //                 listen: false)
+                            //             .user;
+
+                            //     // Get the current date and time
+                            //     DateTime currentDate = DateTime.now();
+
+                            //     // Create a map with the information to be stored
+                            //     Map<String, dynamic> SellerList = {
+                            //       'googleUserEmail': googleUserId!.email,
+                            //       'deliveryTime': deliveryInfo.deliveryTime,
+                            //       'deliveryCharges':
+                            //           deliveryInfo.deliveryCharges,
+                            //       'dateTime': currentDate,
+                            //     };
+
+                            //     // Store the information in Firebase
+                            //     FirebaseFirestore.instance
+                            //         .collection('SellerList')
+                            //         .add(SellerList)
+                            //         .then((value) {
+                            //       // Handle success, if needed
+                            //       print("Invitation stored successfully");
+                            //     }).catchError((error) {
+                            //       // Handle error, if needed
+                            //       print("Error storing invitation: $error");
+                            //     });
+                            //   }
+                            // });
+                            showDialog(
+                              context: context,
+                              builder: (context) => DeliveryInfoPopup(request),
+                            ).then((deliveryInfo) {
+                              if (deliveryInfo != null) {
+                                // Get the current user's Google user ID
+                                GoogleSignInAccount? googleUserId =
+                                    Provider.of<UserProvider>(context,
+                                            listen: false)
+                                        .user;
+
+                                if (googleUserId != null) {
+                                  // Create a document reference with the Google user ID
+                                  DocumentReference sellerListRef =
+                                      FirebaseFirestore.instance
+                                          .collection('SellerList')
+                                          .doc(googleUserId.id);
+
+                                  // Get the current date and time
+                                  DateTime currentDate = DateTime.now();
+
+                                  // Create a map with the information to be stored
+                                  Map<String, dynamic> sellerListData = {
+                                    'googleUserEmail': googleUserId.email,
+                                    'deliveryTime': deliveryInfo.deliveryTime,
+                                    'deliveryCharges':
+                                        deliveryInfo.deliveryCharges,
+                                    'dateTime': currentDate,
+                                  };
+
+                                  // Store the information in Firebase using the set method to overwrite any existing data
+                                  sellerListRef
+                                      .set(sellerListData)
+                                      .then((value) {
+                                    // Handle success, if needed
+                                    print("Invitation stored successfully");
+                                  }).catchError((error) {
+                                    // Handle error, if needed
+                                    print("Error storing invitation: $error");
+                                  });
+                                }
+                              }
+                            });
                           },
                           child: Text("Send Invitation"),
                           style: ElevatedButton.styleFrom(
-                              backgroundColor: Colors.green),
+                            backgroundColor: Colors.green,
+                          ),
                         ),
                       ],
                     ),
@@ -275,7 +364,7 @@ class ModifyInvitationDialog extends StatelessWidget {
                   return DataRow(cells: [
                     DataCell(Text(item.name)),
                     DataCell(Text(item.price.toString())),
-                    DataCell(Text(item.quantity.toString())),
+                    DataCell(Text(item.getDisplayQuantity())),
                     DataCell(
                         Text((item.price * item.quantity).toStringAsFixed(2))),
                     DataCell(
@@ -323,6 +412,282 @@ class ModifyInvitationDialog extends StatelessWidget {
   }
 }
 
+// class DeliveryInfoPopup extends StatefulWidget {
+//   final BuyerRequest request;
+
+//   DeliveryInfoPopup(this.request);
+
+//   @override
+//   _DeliveryInfoPopupState createState() => _DeliveryInfoPopupState();
+// }
+
+// class _DeliveryInfoPopupState extends State<DeliveryInfoPopup> {
+//   late TextEditingController deliveryTimeController;
+//   late TextEditingController deliveryChargesController;
+//   List<double> deliveryChargesSuggestions = [30, 50, 100];
+
+//   @override
+//   void initState() {
+//     super.initState();
+//     deliveryTimeController = TextEditingController();
+//     deliveryChargesController = TextEditingController();
+//   }
+
+//   @override
+//   Widget build(BuildContext context) {
+//     return AlertDialog(
+//       title: Text("Delivery Information"),
+//       content: Container(
+//         width: 300,
+//         child: Column(
+//           mainAxisSize: MainAxisSize.min,
+//           children: [
+//             DropdownButtonFormField<double>(
+//               value: deliveryChargesController.text.isNotEmpty
+//                   ? double.parse(deliveryChargesController.text)
+//                   : null,
+//               items: deliveryChargesSuggestions
+//                   .map(
+//                     (charge) => DropdownMenuItem<double>(
+//                       value: charge,
+//                       child: Text("\₹ $charge"),
+//                     ),
+//                   )
+//                   .toList(),
+//               onChanged: (value) {
+//                 setState(() {
+//                   deliveryChargesController.text = value.toString();
+//                 });
+//               },
+//               decoration: InputDecoration(
+//                 labelText: "Delivery Charges (₹)",
+//                 hintText: "Select charges",
+//               ),
+//             ),
+//             SizedBox(height: 16),
+//             DropdownButtonFormField<String>(
+//               value: deliveryTimeController.text.isNotEmpty
+//                   ? deliveryTimeController.text
+//                   : null,
+//               items: [
+//                 "10 minutes",
+//                 "15 minutes",
+//                 "30 minutes",
+//                 "1 hour",
+//                 "2 hours",
+//               ]
+//                   .map(
+//                     (time) => DropdownMenuItem<String>(
+//                       value: time,
+//                       child: Text(time),
+//                     ),
+//                   )
+//                   .toList(),
+//               onChanged: (value) {
+//                 setState(() {
+//                   deliveryTimeController.text = value!;
+//                 });
+//               },
+//               decoration: InputDecoration(
+//                 labelText: "Expected Delivery Time",
+//                 hintText: "Select time",
+//               ),
+//             ),
+//           ],
+//         ),
+//       ),
+//       actions: <Widget>[
+//         TextButton(
+//           onPressed: () {
+//             Navigator.of(context).pop(); // Close the popup
+//           },
+//           child: Text("Cancel"),
+//         ),
+//         TextButton(
+//           onPressed: () {
+//             // Validate and collect the delivery information
+//             String deliveryTime = deliveryTimeController.text.trim();
+//             double deliveryCharges =
+//                 double.tryParse(deliveryChargesController.text) ?? 0.0;
+
+//             if (deliveryTime.isNotEmpty && deliveryCharges >= 0.0) {
+//               // Pass the collected delivery information back to the calling screen
+//               Navigator.of(context).pop(
+//                 DeliveryInfo(
+//                   deliveryTime: deliveryTime,
+//                   deliveryCharges: deliveryCharges,
+//                 ),
+//               );
+//             } else {
+//               // Handle validation error
+//               // You can show a snackbar or dialog indicating invalid input
+//             }
+//           },
+//           child: Text("Send"),
+//         ),
+//       ],
+//     );
+//   }
+// }
+
+class DeliveryInfoPopup extends StatefulWidget {
+  final BuyerRequest request;
+
+  DeliveryInfoPopup(this.request);
+
+  @override
+  _DeliveryInfoPopupState createState() => _DeliveryInfoPopupState();
+}
+
+class _DeliveryInfoPopupState extends State<DeliveryInfoPopup> {
+  late TextEditingController deliveryTimeController;
+  late TextEditingController deliveryChargesController;
+  late TextEditingController shoppingLocationController; // Add this line
+  List<double> deliveryChargesSuggestions = [30, 50, 100];
+
+  @override
+  void initState() {
+    super.initState();
+    deliveryTimeController = TextEditingController();
+    deliveryChargesController = TextEditingController();
+    shoppingLocationController = TextEditingController(); // Add this line
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return AlertDialog(
+      title: Text("Delivery Information"),
+      content: Container(
+        width: 300,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            DropdownButtonFormField<String>(
+              value: shoppingLocationController.text.isNotEmpty
+                  ? shoppingLocationController.text
+                  : null,
+              items: [
+                "Canteen",
+                "Nescafe",
+                "Kashmir University Road",
+                "Lal Chowk",
+                "Shwarma Hut",
+                "Parsa's",
+                "Turfah Restaurant",
+                "Domino's",
+                "City One Mall",
+              ]
+                  .map(
+                    (location) => DropdownMenuItem<String>(
+                      value: location,
+                      child: Text(location),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  shoppingLocationController.text = value!;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: "Shopping Location",
+                hintText: "Select location",
+              ),
+            ),
+            SizedBox(height: 16),
+            DropdownButtonFormField<double>(
+              value: deliveryChargesController.text.isNotEmpty
+                  ? double.parse(deliveryChargesController.text)
+                  : null,
+              items: deliveryChargesSuggestions
+                  .map(
+                    (charge) => DropdownMenuItem<double>(
+                      value: charge,
+                      child: Text("\₹ $charge"),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  deliveryChargesController.text = value.toString();
+                });
+              },
+              decoration: InputDecoration(
+                labelText: "Delivery Charges (₹)",
+                hintText: "Select charges",
+              ),
+            ),
+            SizedBox(height: 16),
+            DropdownButtonFormField<String>(
+              value: deliveryTimeController.text.isNotEmpty
+                  ? deliveryTimeController.text
+                  : null,
+              items: [
+                "10 minutes",
+                "15 minutes",
+                "30 minutes",
+                "1 hour",
+                "2 hours",
+              ]
+                  .map(
+                    (time) => DropdownMenuItem<String>(
+                      value: time,
+                      child: Text(time),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (value) {
+                setState(() {
+                  deliveryTimeController.text = value!;
+                });
+              },
+              decoration: InputDecoration(
+                labelText: "Expected Delivery Time",
+                hintText: "Select time",
+              ),
+            ),
+          ],
+        ),
+      ),
+      actions: <Widget>[
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop(); // Close the popup
+          },
+          child: Text("Cancel"),
+        ),
+        TextButton(
+          onPressed: () {
+            // Validate and collect the delivery information
+            String deliveryTime = deliveryTimeController.text.trim();
+            double deliveryCharges =
+                double.tryParse(deliveryChargesController.text) ?? 0.0;
+            String shoppingLocation =
+                shoppingLocationController.text.trim(); // Add this line
+
+            if (deliveryTime.isNotEmpty &&
+                deliveryCharges >= 0.0 &&
+                shoppingLocation.isNotEmpty) {
+              // Pass the collected delivery information back to the calling screen
+              Navigator.of(context).pop(
+                DeliveryInfo(
+                  deliveryTime: deliveryTime,
+                  deliveryCharges: deliveryCharges,
+                  shoppingLocation: shoppingLocation, // Add this line
+                ),
+              );
+            } else {
+              // Handle validation error
+              // You can show a snackbar or dialog indicating invalid input
+            }
+          },
+          child: Text("Send"),
+        ),
+      ],
+    );
+  }
+}
+
 class EditPriceDialog extends StatelessWidget {
   final RequestedItem item;
 
@@ -334,7 +699,8 @@ class EditPriceDialog extends StatelessWidget {
     late TextEditingController quantityController;
 
     priceController = TextEditingController(text: item.price.toString());
-    quantityController = TextEditingController(text: item.quantity.toString());
+    quantityController = TextEditingController(
+        text: item.quantity.toStringAsFixed(0)); // Format as integer
 
     return AlertDialog(
       title: Text("Edit Price and Quantity"),
@@ -357,10 +723,10 @@ class EditPriceDialog extends StatelessWidget {
         TextButton(
           onPressed: () {
             double newPrice = double.parse(priceController.text);
-            double newQuantity = double.parse(quantityController.text);
-
+            int newQuantity = int.parse(quantityController.text);
             // Update the item with new values
-            // Call onSave to save changes
+            item.price = newPrice;
+            item.quantity = newQuantity.toDouble();
             Navigator.of(context).pop();
           },
           child: Text("Save"),

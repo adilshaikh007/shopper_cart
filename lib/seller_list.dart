@@ -1,35 +1,44 @@
 // ignore_for_file: prefer_const_constructors
 
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:shopper_cart/models/seller_model.dart';
 import 'package:shopper_cart/orders_details_list.dart';
 
-class SellerListPage extends StatelessWidget {
-  final List<Seller> sellers = [
-    Seller(
-      name: 'Adil Shaikh',
-      shoppinglocation: 'Canteen',
-      deliveryTime: '30 minutes',
-      deliveryPersonHomeAddress: 'chenab -308',
-      phoneNumber: '9103109066',
-    ),
-    Seller(
-      name: 'Danish Shaikh',
-      shoppinglocation: 'Friday Market',
-      deliveryTime: '1 hour',
-      modifiedList: true,
-      deliveryPersonHomeAddress: 'jhelum extension -29',
-      phoneNumber: '9011897964',
-    ),
-    Seller(
-      name: 'Tauhid Qureshi',
-      shoppinglocation: 'Lal Chowk',
-      deliveryTime: '1 hour',
-      modifiedList: true,
-      deliveryPersonHomeAddress: 'jhelum extension -29',
-      phoneNumber: '9011897964',
-    ),
-  ];
+class SellerListPage extends StatefulWidget {
+  @override
+  State<SellerListPage> createState() => _SellerListPageState();
+}
+
+class _SellerListPageState extends State<SellerListPage> {
+  late List<Seller> sellers = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchSellersFromFirebase();
+  }
+
+  Future<void> fetchSellersFromFirebase() async {
+    final QuerySnapshot<Map<String, dynamic>> snapshot =
+        await FirebaseFirestore.instance.collection('SellerList').get();
+
+    final List<Seller> sellers =
+        snapshot.docs.map((DocumentSnapshot<Map<String, dynamic>> doc) {
+      final data = doc.data()!;
+
+      return Seller(
+        shoppinglocation: data['shoppinglocation'],
+        deliveryTime: data['deliveryTime'],
+        modifiedList: data['modifiedList'] ?? false,
+        phoneNumber: data['phoneNumber'],
+      );
+    }).toList();
+
+    setState(() {
+      this.sellers = sellers;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -71,14 +80,6 @@ class SellerListPage extends StatelessWidget {
               elevation: 4,
               child: ListTile(
                 contentPadding: EdgeInsets.all(16),
-                title: Text(
-                  seller.name,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
-                    color: Colors.indigo, // Text color
-                  ),
-                ),
                 subtitle: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
