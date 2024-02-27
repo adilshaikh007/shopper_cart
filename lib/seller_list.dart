@@ -136,7 +136,7 @@ class ModifiedListButton extends StatelessWidget {
         );
       },
       style: ElevatedButton.styleFrom(
-        primary: modifiedList ? Colors.green : Colors.red, // Button color
+        //   primary: modifiedList ? Colors.green : Colors.red, // Button color
         textStyle: TextStyle(fontSize: 16),
         padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
         shape: RoundedRectangleBorder(

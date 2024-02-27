@@ -65,7 +65,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       });
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.red, // Button color
+                      //    primary: Colors.red, // Button color
                       textStyle: TextStyle(fontSize: 16),
                       padding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -85,7 +85,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       // Add action for Modified List button
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.green, // Button color
+                      //    primary: Colors.green, // Button color
                       textStyle: TextStyle(fontSize: 16),
                       padding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -104,7 +104,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       // Add action for Chat Now button
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.red, // Button color
+                      //    primary: Colors.red, // Button color
                       textStyle: TextStyle(fontSize: 16),
                       padding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -123,7 +123,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       _launchPhoneDialer(widget.seller.phoneNumber);
                     },
                     style: ElevatedButton.styleFrom(
-                      primary: Colors.black, // Button color
+                      //    primary: Colors.black, // Button color
                       textStyle: TextStyle(fontSize: 16),
                       padding:
                           EdgeInsets.symmetric(horizontal: 16, vertical: 8),

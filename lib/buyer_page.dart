@@ -1,128 +1,4 @@
-// // ignore_for_file: prefer_const_constructors
-
-// import 'package:flutter/material.dart';
-
-// class BuyerPage extends StatefulWidget {
-//   @override
-//   _BuyerPageState createState() => _BuyerPageState();
-// }
-
-// class _BuyerPageState extends State<BuyerPage> {
-//   TextEditingController _searchController = TextEditingController();
-//   List<String> suggestedPlaces = [
-//     "Canteen",
-//     "Nescafe",
-//     "Kashmir University Road",
-//     "Lal Chowk",
-//     "Shwarma Hut",
-//     "Parsa's",
-//     "Turfah Restaurant",
-//     "Domino's",
-//     "City One Mall",
-//     // Add more suggested places here
-//   ];
-
-//   List<String> filteredPlaces = [];
-
-//   @override
-//   void initState() {
-//     super.initState();
-//     filteredPlaces = suggestedPlaces;
-//   }
-
-//   void _filterPlaces(String query) {
-//     setState(() {
-//       filteredPlaces = suggestedPlaces
-//           .where((place) => place.toLowerCase().contains(query.toLowerCase()))
-//           .toList();
-//     });
-//   }
-
-//   void _navigateToMakeListPage() {
-//     // Navigate to the "/makelist" route
-//     Navigator.of(context).pushNamed("/makelist");
-//   }
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Scaffold(
-//       appBar: AppBar(
-//         title: Text("Buyer Page"),
-//       ),
-//       body: Column(
-//         crossAxisAlignment: CrossAxisAlignment.stretch,
-//         children: <Widget>[
-//           Padding(
-//             padding: const EdgeInsets.all(16.0),
-//             child: Text(
-//               "Where do you want to buy from?",
-//               style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-//             ),
-//           ),
-//           Padding(
-//             padding: const EdgeInsets.all(20.0),
-//             child: TextField(
-//               controller: _searchController,
-//               onChanged: _filterPlaces,
-//               onSubmitted: (value) {
-//                 // Navigate to the "/makelist" route when the user presses Enter
-//                 _navigateToMakeListPage();
-//               },
-//               decoration: InputDecoration(
-//                 hintText: "Search for places...",
-//                 border: OutlineInputBorder(
-//                   borderRadius: BorderRadius.circular(10.0),
-//                 ),
-//                 suffixIcon: IconButton(
-//                   icon: Icon(Icons.search),
-//                   onPressed: _navigateToMakeListPage,
-//                 ),
-//                 filled: true,
-//                 fillColor: Colors.grey[200], // Background color
-//               ),
-//             ),
-//           ),
-//           SizedBox(height: 20),
-//           Padding(
-//             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-//             child: Text(
-//               "Suggested Places",
-//               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-//             ),
-//           ),
-//           Expanded(
-//             child: ListView.builder(
-//               itemCount: filteredPlaces.length,
-//               itemBuilder: (context, index) {
-//                 final placeName = filteredPlaces[index];
-//                 return _buildSuggestedPlace(placeName, context);
-//               },
-//             ),
-//           ),
-//         ],
-//       ),
-//     );
-//   }
-
-//   Widget _buildSuggestedPlace(String placeName, BuildContext context) {
-//     return GestureDetector(
-//       onTap: () {
-//         // Navigate to the "/makelist" route when a suggested place is tapped
-//         _navigateToMakeListPage();
-//       },
-//       child: ListTile(
-//         leading: Icon(
-//           Icons.location_on,
-//           color: Colors.blue, // Icon color
-//         ),
-//         title: Text(
-//           placeName,
-//           style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-//         ),
-//       ),
-//     );
-//   }
-// }
+// ignore_for_file: sized_box_for_whitespace
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -149,7 +25,8 @@ class _BuyerPageState extends State<BuyerPage> {
     "Turfah Restaurant",
     "Domino's",
     "City One Mall",
-    // Add more suggested places here
+    // Add more
+    //suggested places here
   ];
 
   List<String> filteredPlaces = [];
@@ -264,32 +141,35 @@ class _BuyerPageState extends State<BuyerPage> {
     if (currentUser != null && currentUser.id != null) {
       print("Current user ID: ${currentUser.id}");
 
-      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-          .collection('users')
-          .doc(currentUser.id)
-          .get();
+      try {
+        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+            .collection('users')
+            .doc(currentUser.id)
+            .get();
 
-      print("User document data: ${userSnapshot.data()}");
+        print("User document data: ${userSnapshot.data()}");
 
-      if (userSnapshot.exists) {
-        Map<String, dynamic>? userData =
-            userSnapshot.data() as Map<String, dynamic>?;
+        if (userSnapshot.exists) {
+          final userData = userSnapshot.data() as Map<String, dynamic>;
+          final address = userData.containsKey('address')
+              ? userData['address'] as Map<String, dynamic>
+              : null;
 
-        if (userData != null && userData.containsKey('address')) {
-          Map<String, dynamic>? address = userData['address'];
           print("Address data: $address");
 
-          if (address != null && address['city'] != null) {
-            String city = address['city'];
-            List<String> locations = [city];
-            return locations;
+          if (address != null && address.containsKey('area')) {
+            final area = address['area'] as String;
+            return [area];
           }
         }
+      } catch (error) {
+        print("Error fetching data: $error");
+        // Handle errors here, e.g., show a user-friendly message or log the error
       }
     }
 
-    // Default return value if something goes wrong or no address found
-    return ["No Address Found"];
+    // Default return value if no valid address found or other errors occurred
+    return ["No Valid Address Found"];
   }
 
   @override

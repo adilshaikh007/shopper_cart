@@ -48,7 +48,7 @@ class BuyAndDeliverPage extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       fixedSize: Size(125, 70),
-                      primary: Colors.green,
+                      //   primary: Colors.green,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),
@@ -68,7 +68,7 @@ class BuyAndDeliverPage extends StatelessWidget {
                     },
                     style: ElevatedButton.styleFrom(
                       fixedSize: Size(125, 70),
-                      primary: Colors.orange,
+                      //    primary: Colors.orange,
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(20),
                       ),

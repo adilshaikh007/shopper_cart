@@ -356,8 +356,8 @@ class _MakeListPageState extends State<MakeListPage> {
               },
               child: Text("Add Item"),
               style: ElevatedButton.styleFrom(
-                primary: Colors.blue,
-              ),
+                  // primary: Colors.blue,
+                  ),
             ),
           ),
           SizedBox(height: 20),
@@ -396,8 +396,8 @@ class _MakeListPageState extends State<MakeListPage> {
                   },
                   child: Text("Find Shoppers"),
                   style: ElevatedButton.styleFrom(
-                    primary: Colors.green,
-                  ),
+                      //     primary: Colors.green,
+                      ),
                 ),
               ],
             ),

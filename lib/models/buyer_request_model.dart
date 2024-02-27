@@ -4,8 +4,8 @@ import 'package:shopper_cart/models/requested_model.dart';
 class BuyerRequest {
   final String displayName;
   final Map<String, dynamic> address;
-  final double grandTotal;
-  final List<RequestedItem> requestedItems;
+  double grandTotal;
+  late final List<RequestedItem> requestedItems;
 
   BuyerRequest({
     required this.displayName,
@@ -25,5 +25,12 @@ class BuyerRequest {
         return RequestedItem.fromMap(item);
       }).toList(),
     );
+  }
+  void calculateGrandTotal() {
+    double total = 0.0;
+    for (var item in requestedItems) {
+      total += (item.price * item.quantity);
+    }
+    grandTotal = total;
   }
 }
