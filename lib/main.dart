@@ -6,6 +6,8 @@ import 'package:shopper_cart/choice_page.dart';
 import 'package:shopper_cart/login_page.dart';
 import 'package:shopper_cart/makelist_page.dart';
 import 'package:shopper_cart/models/requested_model.dart';
+import 'package:shopper_cart/models/seller_model.dart';
+import 'package:shopper_cart/orders_details_list.dart';
 import 'package:shopper_cart/page_changer.dart';
 import 'package:shopper_cart/profile_page.dart';
 import 'package:shopper_cart/seller_list.dart';
@@ -45,6 +47,13 @@ class _MainAppState extends State<MainApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       routes: {
+        // "/": (context) => OrderDetailsScreen(
+        //       seller: Seller(
+        //           shoppinglocation: "Canteen",
+        //           deliveryTime: "30 min",
+        //           phoneNumber: "9103109066"),
+        //       showModifiedListButton: false,
+        //     ),
         "/": (context) => LoginPage(),
         "/profile": (context) => ProfilePage(),
         "/sellerlist": (context) => SellerListPage(),

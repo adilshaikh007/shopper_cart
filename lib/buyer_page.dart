@@ -1,8 +1,11 @@
-// ignore_for_file: sized_box_for_whitespace
+// ignore_for_file: sized_box_for_whitespace, prefer_final_fields
 
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
+import 'package:shopper_cart/add_address_page.dart';
+import 'package:shopper_cart/user_provider.dart';
 
 GoogleSignIn _googleSignIn = GoogleSignIn(
   scopes: ['email', 'https://www.googleapis.com/auth/contacts.readonly'],
@@ -93,7 +96,9 @@ class _BuyerPageState extends State<BuyerPage> {
                       ElevatedButton(
                         onPressed: () {
                           if (selectedLocation == "Add New Address") {
-                            _navigateToAddNewAddress();
+                            Navigator.pop(context); // Close the current dialog
+                            _navigateToAddNewAddress(
+                                context); // Navigate to add new address page
                           } else {
                             Navigator.pop(context);
                             _navigateToSelectAddress();
@@ -112,8 +117,58 @@ class _BuyerPageState extends State<BuyerPage> {
     );
   }
 
-  void _navigateToAddNewAddress() {
-    Navigator.pushNamed(context, "/addaddress").then((value) {
+  Future<List<String>> _fetchLocationsFromFirebase() async {
+    // final currentUser = _googleSignIn.currentUser;
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    final currentUser = userProvider.user;
+    if (currentUser == null || currentUser.id == null) {
+      // User not authenticated
+      return ["User not authenticated."];
+    }
+
+    print("Current user ID: ${currentUser.id}");
+
+    try {
+      DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(currentUser.id)
+          .get();
+
+      print("User document data: ${userSnapshot.data()}");
+
+      if (userSnapshot.exists) {
+        final userData = userSnapshot.data() as Map<String, dynamic>;
+        final address = userData.containsKey('address')
+            ? userData['address'] as Map<String, dynamic>
+            : null;
+
+        print("Address data: $address");
+
+        if (address != null && address.containsKey('area')) {
+          final area = address['area'] as String;
+          return [area];
+        } else {
+          // Address data is incomplete or missing
+          return [
+            "Your address is not available. Please add your address to proceed."
+          ];
+        }
+      } else {
+        // User document does not exist
+        return ["User data not found."];
+      }
+    } catch (error) {
+      print("Error fetching data: $error");
+      // Handle errors here, e.g., show a user-friendly message or log the error
+      return ["Error fetching data. Please try again later."];
+    }
+  }
+
+  void _navigateToAddNewAddress(BuildContext context) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => AddAddressPage()),
+    ).then((value) {
       if (value == true) {
         _fetchLocationsFromFirebase().then((locations) {
           setState(() {
@@ -133,43 +188,6 @@ class _BuyerPageState extends State<BuyerPage> {
         Navigator.pop(context);
       }
     });
-  }
-
-  Future<List<String>> _fetchLocationsFromFirebase() async {
-    final currentUser = _googleSignIn.currentUser;
-
-    if (currentUser != null && currentUser.id != null) {
-      print("Current user ID: ${currentUser.id}");
-
-      try {
-        DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
-            .collection('users')
-            .doc(currentUser.id)
-            .get();
-
-        print("User document data: ${userSnapshot.data()}");
-
-        if (userSnapshot.exists) {
-          final userData = userSnapshot.data() as Map<String, dynamic>;
-          final address = userData.containsKey('address')
-              ? userData['address'] as Map<String, dynamic>
-              : null;
-
-          print("Address data: $address");
-
-          if (address != null && address.containsKey('area')) {
-            final area = address['area'] as String;
-            return [area];
-          }
-        }
-      } catch (error) {
-        print("Error fetching data: $error");
-        // Handle errors here, e.g., show a user-friendly message or log the error
-      }
-    }
-
-    // Default return value if no valid address found or other errors occurred
-    return ["No Valid Address Found"];
   }
 
   @override

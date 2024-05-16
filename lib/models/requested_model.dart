@@ -42,4 +42,12 @@ class RequestedItem {
       return quantity.toString();
     }
   }
+
+  Map<String, dynamic> toMap() {
+    return {
+      'name': name,
+      'price': price,
+      'quantity': quantity,
+    };
+  }
 }

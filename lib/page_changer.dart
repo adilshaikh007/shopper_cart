@@ -28,35 +28,11 @@ class _PageChangerState extends State<PageChanger> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-        // appBar: AppBar(
-        //   backgroundColor: Colors.white,
-        //   centerTitle: true,
-        //   title: CircleAvatar(
-        //     radius: 20,
-        //     backgroundImage: AssetImage(
-        //       "assets/images/logo.png",
-        //     ),
-        //   ),
-        //   elevation: 0,
-        //   // title: Text(
-        //   //   selectedPage == 0
-        //   //       ? 'PhotoMe'
-        //   //       : selectedPage == 1
-        //   //           ? 'Book Now'
-        //   //           : selectedPage == 2
-        //   //               ? 'Reels'
-        //   //               : 'Profile',
-        //   //   style: GoogleFonts.poppins(color: Colors.black, fontSize: 30),
-        //   // ),
-        // ),sa m
         body: PageView(
           controller: pageController,
           children: [
             BuyerPage(),
-            ShopperPage(
-
-                // itemSuggestions: [],
-                ),
+            ShopperPage(),
             ProfilePage(),
           ],
           onPageChanged: (index) {

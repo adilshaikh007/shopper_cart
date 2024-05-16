@@ -1,12 +1,17 @@
+// ignore_for_file: prefer_const_constructors, prefer_final_fields
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:shopper_cart/models/makelistmodel.dart';
+import 'package:shopper_cart/models/seller_model.dart';
 import 'package:shopper_cart/page_changer.dart';
 import 'package:shopper_cart/shopper_page.dart';
 import 'package:shopper_cart/user_provider.dart';
+import 'package:shopper_cart/orders_details_list.dart';
 
 class MakeListPage extends StatefulWidget {
   @override
@@ -167,31 +172,6 @@ class _MakeListPageState extends State<MakeListPage> {
     updateShoppingListInFirestore(shoppingList, grandTotal, false);
   }
 
-  // void findShoppers(BuildContext context) {
-  //   // Calculate the grand total before navigating to SellerListPage
-  //   double grandTotal = calculateGrandTotal();
-
-  //   // Set findShoppersClicked to true before navigating to SellerListPage
-  //   Provider.of<UserProvider>(context, listen: false).findShoppersClicked =
-  //       true;
-
-  //   if (shoppingList.isNotEmpty) {
-  //     // Update the shopping list and grand total in Firestore before navigating
-  //     updateShoppingListInFirestore(shoppingList, grandTotal, true);
-
-  //     Navigator.of(context).push(
-  //       MaterialPageRoute(
-  //         builder: (context) => PageChanger(),
-  //       ),
-  //     );
-  //   } else {
-  //     ScaffoldMessenger.of(context).showSnackBar(
-  //       SnackBar(
-  //         content: Text('Please add at least 1 item to your cart.'),
-  //       ),
-  //     );
-  //   }
-  // }
   void findShoppers(BuildContext context) async {
     // Calculate the grand total before navigating to SellerListPage
     double grandTotal = calculateGrandTotal();
