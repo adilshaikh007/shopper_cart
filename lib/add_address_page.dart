@@ -1,13 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
+import 'package:shopper_cart/user_provider.dart';
 
-class AddAddressPage extends StatelessWidget {
+class AddAddressPage extends StatefulWidget {
+  @override
+  State<AddAddressPage> createState() => _AddAddressPageState();
+}
+
+class _AddAddressPageState extends State<AddAddressPage> {
   final TextEditingController _areaController = TextEditingController();
+
   final TextEditingController _cityController = TextEditingController();
+
   final TextEditingController _collegeController = TextEditingController();
+
   final TextEditingController _hostelController = TextEditingController();
+
   final TextEditingController _phoneController = TextEditingController();
+
   final TextEditingController _roomController = TextEditingController();
+
   final TextEditingController _stateController = TextEditingController();
 
   void _addNewAddress(BuildContext context) async {
@@ -33,17 +46,23 @@ class AddAddressPage extends StatelessWidget {
     }
 
     try {
-      await FirebaseFirestore.instance.collection('addresses').add({
-        'area': area,
-        'city': city,
-        'college': college,
-        'hostel': hostel,
-        'phone': phone,
-        'room': room,
-        'state': state,
+      final CollectionReference users =
+          FirebaseFirestore.instance.collection('users');
+      final userProvider = Provider.of<UserProvider>(context, listen: false);
+      final currentUser = userProvider.user;
+      await users.doc(currentUser!.id).update({
+        'address': {
+          'room': _roomController.text,
+          'hostel': _hostelController.text,
+          'college': _collegeController.text,
+          'area': _areaController.text,
+          'city': _cityController.text,
+          'state': _stateController.text,
+          'phone': _phoneController.text,
+        },
       });
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Address added successfully.'),
+        content: Text('Address updated successfully.'),
       ));
       Navigator.pop(context, true); // Return true to indicate success
     } catch (error) {

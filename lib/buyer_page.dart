@@ -72,39 +72,20 @@ class _BuyerPageState extends State<BuyerPage> {
                   return Text("No locations available");
                 } else {
                   List<String> locations = snapshot.data!;
-                  locations.add("Add New Address");
+                  // Set a default value for selectedLocation
+                  selectedLocation = locations.first;
 
                   return Column(
                     children: [
-                      DropdownButton<String>(
-                        value:
-                            selectedLocation.isEmpty ? null : selectedLocation,
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedLocation = newValue!;
-                          });
-                        },
-                        items: locations
-                            .map<DropdownMenuItem<String>>((String value) {
-                          return DropdownMenuItem<String>(
-                            value: value,
-                            child: Text(value),
-                          );
-                        }).toList(),
-                      ),
+                      // Display the selected location without DropdownButton
+                      Text("$selectedLocation"),
                       SizedBox(height: 10),
                       ElevatedButton(
                         onPressed: () {
-                          if (selectedLocation == "Add New Address") {
-                            Navigator.pop(context); // Close the current dialog
-                            _navigateToAddNewAddress(
-                                context); // Navigate to add new address page
-                          } else {
-                            Navigator.pop(context);
-                            _navigateToSelectAddress();
-                          }
+                          Navigator.pop(context); // Close the current dialog
+                          _navigateToAddNewAddress(context);
                         },
-                        child: Text("Select Address"),
+                        child: Text("Update address"),
                       ),
                     ],
                   );
@@ -117,8 +98,53 @@ class _BuyerPageState extends State<BuyerPage> {
     );
   }
 
+  // Future<List<String>> _fetchLocationsFromFirebase() async {
+  //   // final currentUser = _googleSignIn.currentUser;
+  //   final userProvider = Provider.of<UserProvider>(context, listen: false);
+  //   final currentUser = userProvider.user;
+  //   if (currentUser == null || currentUser.id == null) {
+  //     // User not authenticated
+  //     return ["User not authenticated."];
+  //   }
+
+  //   print("Current user ID: ${currentUser.id}");
+
+  //   try {
+  //     DocumentSnapshot userSnapshot = await FirebaseFirestore.instance
+  //         .collection('users')
+  //         .doc(currentUser.id)
+  //         .get();
+
+  //     print("User document data: ${userSnapshot.data()}");
+
+  //     if (userSnapshot.exists) {
+  //       final userData = userSnapshot.data() as Map<String, dynamic>;
+  //       final address = userData.containsKey('address')
+  //           ? userData['address'] as Map<String, dynamic>
+  //           : null;
+
+  //       print("Address data: $address");
+
+  //       if (address != null && address.containsKey('hostel')) {
+  //         final hostel = address['hostel'] as String;
+  //         return [hostel];
+  //       } else {
+  //         // Address data is incomplete or missing
+  //         return [
+  //           "Your address is not available. Please add your address to proceed."
+  //         ];
+  //       }
+  //     } else {
+  //       // User document does not exist
+  //       return ["User data not found."];
+  //     }
+  //   } catch (error) {
+  //     print("Error fetching data: $error");
+  //     // Handle errors here, e.g., show a user-friendly message or log the error
+  //     return ["Error fetching data. Please try again later."];
+  //   }
+  // }
   Future<List<String>> _fetchLocationsFromFirebase() async {
-    // final currentUser = _googleSignIn.currentUser;
     final userProvider = Provider.of<UserProvider>(context, listen: false);
     final currentUser = userProvider.user;
     if (currentUser == null || currentUser.id == null) {
@@ -144,9 +170,19 @@ class _BuyerPageState extends State<BuyerPage> {
 
         print("Address data: $address");
 
-        if (address != null && address.containsKey('area')) {
-          final area = address['area'] as String;
-          return [area];
+        if (address != null && address.isNotEmpty) {
+          final area = address.containsKey('area') ? address['area'] : '';
+          final city = address.containsKey('city') ? address['city'] : '';
+          final college =
+              address.containsKey('college') ? address['college'] : '';
+          final hostel = address.containsKey('hostel') ? address['hostel'] : '';
+          final phone = address.containsKey('phone') ? address['phone'] : '';
+          final room = address.containsKey('room') ? address['room'] : '';
+          final state = address.containsKey('state') ? address['state'] : '';
+
+          final completeAddress =
+              "$hostel - $room, $college, $area, $city, $state, Phone- $phone"; // Customize this format as needed
+          return [completeAddress];
         } else {
           // Address data is incomplete or missing
           return [

@@ -107,22 +107,35 @@ class _MakeListPageState extends State<MakeListPage> {
 
   // double calculateGrandTotal() {
   //   double total = 0;
+
   //   for (var item in shoppingList) {
-  //     total += item.price * item.quantity;
+  //     double quantity = (item.quantity.toLowerCase() == 'half')
+  //         ? 0.5
+  //         : (item.quantity.toLowerCase() == 'full')
+  //             ? 1.0
+  //             : double.tryParse(item.quantity) ?? 0;
+
+  //     total += item.price * quantity;
   //   }
+
   //   return total;
   // }
+
   double calculateGrandTotal() {
     double total = 0;
 
     for (var item in shoppingList) {
-      double quantity = (item.quantity.toLowerCase() == 'half')
+      // Check if quantity is a string before converting to lowercase
+      String quantity = item.quantity is String
+          ? item.quantity.toLowerCase()
+          : item.quantity.toString().toLowerCase();
+      double quantityValue = (quantity == 'half')
           ? 0.5
-          : (item.quantity.toLowerCase() == 'full')
+          : (quantity == 'full')
               ? 1.0
-              : double.tryParse(item.quantity) ?? 0;
+              : double.tryParse(quantity) ?? 0;
 
-      total += item.price * quantity;
+      total += item.price * quantityValue;
     }
 
     return total;
@@ -202,6 +215,7 @@ class _MakeListPageState extends State<MakeListPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       appBar: AppBar(
         title: Text("Shopping List"),
       ),
@@ -283,7 +297,10 @@ class _MakeListPageState extends State<MakeListPage> {
                       );
                     },
                     onSuggestionSelected: (suggestion) {
-                      _priceController.text = suggestion;
+                      setState(() {
+                        _priceController.text = suggestion;
+                        //  FocusScope.of(context).unfocus();
+                      });
                     },
                   ),
                 ),
@@ -317,7 +334,10 @@ class _MakeListPageState extends State<MakeListPage> {
                       );
                     },
                     onSuggestionSelected: (suggestion) {
-                      _quantityController.text = suggestion;
+                      setState(() {
+                        _quantityController.text = suggestion;
+                        //  FocusScope.of(context).unfocus();
+                      });
                     },
                   ),
                 ),
